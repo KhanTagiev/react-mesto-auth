@@ -1,0 +1,21 @@
+.page_section-container {
+  max-width: 880px;
+  width: 68.75%;
+  min-width: 320px;
+  margin: 0 auto;
+}
+
+
+@media (max-width: 1050px) {
+  .page_section-container {
+    width: 80%;
+  }
+}
+
+@media (max-width: 850px) {
+  .page_section-container {
+    min-width: 282px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

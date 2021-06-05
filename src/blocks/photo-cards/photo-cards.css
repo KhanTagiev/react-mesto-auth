@@ -1,0 +1,10 @@
+.photo-cards {
+  padding: 51px 0  67px;
+  margin: 0 auto;
+}
+
+@media (max-width: 650px) {
+  .photo-cards{
+    padding: 36px 0 48px;
+  }
+}
