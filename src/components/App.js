@@ -10,7 +10,8 @@ import PopupWithForm from './PopupWithForm.js';
 import EditProfilePopup from './EditProfilePopup.js';
 import EditAvatarPopup from './EditAvatarPopup.js';
 import AddPlacePopup from './AddPlacePopup.js';
-import ImagePopup from './ImagePopup.js'
+import ImagePopup from './ImagePopup.js';
+import InfoTooltip from './InfoTooltip.js';
 import profileAvatar from '../images/profile-avatar.jpg';
 import ProtectedRoute from "./ProtectedRoute";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -33,16 +34,20 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({
     isClicked: false,
     name: '',
     url: ''
   });
 
+  const [status,setStatus] = React.useState(false)
+
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setIsInfoTooltipPopupOpen(false);
     setSelectedCard({
       isClicked: false,
       name: '',
@@ -119,7 +124,7 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <BrowserRouter>
         <div className="page">
-          <Header />
+          <Header loggedIn={loggedIn} />
           <Switch>
             <ProtectedRoute
               exact
@@ -151,6 +156,7 @@ function App() {
           <PopupWithForm title='Вы уверены?' name='photo-card-delete'>
             <button className="popup__btn popup__btn_delete" type="button" aria-label="Удалить">Да</button>
           </PopupWithForm>
+          <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} status={status} />
           <Footer />
         </div>
       </BrowserRouter>

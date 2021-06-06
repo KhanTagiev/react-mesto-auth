@@ -1,0 +1,12 @@
+.header__link {
+  color: #fff;
+  background-color: #000;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  text-align: center;
+  justify-self: flex-end;
+  margin:0;
+}
+
