@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import api from '../utils/api.js';
 import Header from './Header.js';
 import Main from './Main.js';
@@ -15,12 +15,19 @@ import InfoTooltip from './InfoTooltip.js';
 import profileAvatar from '../images/profile-avatar.jpg';
 import ProtectedRoute from "./ProtectedRoute";
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import * as mestoAuth from '../utils/mestoAuth.js'
 
 
 function App() {
+  const history = useHistory();
   const [currentUser, setCurrentUser] = React.useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: profileAvatar });
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [userEmail, setUserEmail] = React.useState("");
+
+  React.useEffect(() => {
+    handleCheckToken();
+  }, [])
 
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -41,7 +48,7 @@ function App() {
     url: ''
   });
 
-  const [status,setStatus] = React.useState(false)
+  const [status, setStatus] = React.useState(false)
 
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
@@ -120,46 +127,93 @@ function App() {
       .catch((err) => console.log(err))
   }
 
+  function handleCheckToken() {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      mestoAuth.checkToken(jwt)
+        .then((data) => {
+          setUserEmail(data.data.email)
+          setLoggedIn(true)
+          history.push("/")
+        })
+        .catch(err => console.log(err))
+    } else {
+      return;
+    }
+  }
+
+  function handleRegister(email, password) {
+    mestoAuth.register(email, password)
+      .then((data) => {
+        setStatus(true)
+        setIsInfoTooltipPopupOpen(true)
+      })
+      .catch((err) => {
+        setStatus(false)
+        setIsInfoTooltipPopupOpen(true)
+      })
+  }
+
+  function handleLogin(email, password) {
+    mestoAuth.authorize(email, password)
+      .then((data) => {
+        localStorage.setItem('jwt', data.token)
+        handleCheckToken()
+      })
+      .catch((err) => {
+        setStatus(false)
+        setIsInfoTooltipPopupOpen(true)
+      })
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem("jwt");
+    setLoggedIn(false);
+    setUserEmail("");
+    history.push("/sign-in");
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <BrowserRouter>
-        <div className="page">
-          <Header loggedIn={loggedIn} />
-          <Switch>
-            <ProtectedRoute
-              exact
-              path="/"
-              loggedIn={loggedIn}
-              component={Main}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onEditAvatar={handleEditAvatarClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-              cards={cards}
-            />
-            <Route path="/sign-in">
-              <Login />
-            </Route>
-            <Route path="/sign-up">
-              <Register />
-            </Route>
-            <Route path="">
-              {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
-            </Route>
-          </Switch>
-          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
-          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-          <PopupWithForm title='Вы уверены?' name='photo-card-delete'>
-            <button className="popup__btn popup__btn_delete" type="button" aria-label="Удалить">Да</button>
-          </PopupWithForm>
-          <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} status={status} />
-          <Footer />
-        </div>
-      </BrowserRouter>
+      <div className="page">
+        <Header 
+        loggedIn={loggedIn} 
+        userEmail={userEmail}
+        onSignOut={handleSignOut}/>
+        <Switch>
+          <ProtectedRoute
+            exact
+            path="/"
+            loggedIn={loggedIn}
+            component={Main}
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick}
+            onCardClick={handleCardClick}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete}
+            cards={cards}
+          />
+          <Route path="/sign-in">
+            <Login handleLogin={handleLogin} />
+          </Route>
+          <Route path="/sign-up">
+            <Register handleRegister={handleRegister} />
+          </Route>
+          <Route path="">
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+          </Route>
+        </Switch>
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <PopupWithForm title='Вы уверены?' name='photo-card-delete'>
+          <button className="popup__btn popup__btn_delete" type="button" aria-label="Удалить">Да</button>
+        </PopupWithForm>
+        <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} status={status} />
+        <Footer />
+      </div>
     </CurrentUserContext.Provider>
   );
 }
