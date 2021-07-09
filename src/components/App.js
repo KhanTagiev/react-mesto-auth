@@ -146,7 +146,10 @@ function App() {
           setLoggedIn(true)
           history.push("/")
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+          localStorage.removeItem("jwt")
+          console.log(err)
+        })
     } else {
       return;
     }
