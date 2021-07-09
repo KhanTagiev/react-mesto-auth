@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 import api from '../utils/api.js';
 import Header from './Header.js';
 import Main from './Main.js';
@@ -14,13 +14,17 @@ import ImagePopup from './ImagePopup.js';
 import InfoTooltip from './InfoTooltip.js';
 import profileAvatar from '../images/profile-avatar.jpg';
 import ProtectedRoute from "./ProtectedRoute";
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import * as mestoAuth from '../utils/mestoAuth.js'
 
 
 function App() {
   const history = useHistory();
-  const [currentUser, setCurrentUser] = React.useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: profileAvatar });
+  const [currentUser, setCurrentUser] = React.useState({
+    name: 'Жак-Ив Кусто',
+    about: 'Исследователь океана',
+    avatar: profileAvatar
+  });
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
@@ -42,6 +46,7 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
+  const [isHeaderNavMenuOpen, setIsHeaderNavMenuOpen] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({
     isClicked: false,
     name: '',
@@ -55,6 +60,7 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsInfoTooltipPopupOpen(false);
+    setIsHeaderNavMenuOpen(false)
     setSelectedCard({
       isClicked: false,
       name: '',
@@ -72,6 +78,10 @@ function App() {
 
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true)
+  }
+
+  function handleNavMenuOpenClick() {
+    setIsHeaderNavMenuOpen(true)
   }
 
   function handleCardClick(card) {
@@ -176,10 +186,13 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header 
-        loggedIn={loggedIn} 
-        userEmail={userEmail}
-        onSignOut={handleSignOut}/>
+        <Header
+          loggedIn={loggedIn}
+          userEmail={userEmail}
+          isOpen={isHeaderNavMenuOpen}
+          onNavOpen={handleNavMenuOpenClick}
+          onClose={closeAllPopups}
+          onSignOut={handleSignOut}/>
         <Switch>
           <ProtectedRoute
             exact
@@ -195,24 +208,24 @@ function App() {
             cards={cards}
           />
           <Route path="/sign-in">
-            <Login handleLogin={handleLogin} />
+            <Login handleLogin={handleLogin}/>
           </Route>
           <Route path="/sign-up">
-            <Register handleRegister={handleRegister} />
+            <Register handleRegister={handleRegister}/>
           </Route>
           <Route path="">
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            {loggedIn ? <Redirect to="/"/> : <Redirect to="/sign-in"/>}
           </Route>
         </Switch>
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit}/>
+        <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
         <PopupWithForm title='Вы уверены?' name='photo-card-delete'>
           <button className="popup__btn popup__btn_delete" type="button" aria-label="Удалить">Да</button>
         </PopupWithForm>
-        <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} status={status} />
-        <Footer />
+        <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} status={status}/>
+        <Footer/>
       </div>
     </CurrentUserContext.Provider>
   );

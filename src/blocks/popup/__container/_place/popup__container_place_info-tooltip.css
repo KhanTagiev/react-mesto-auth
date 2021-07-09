@@ -5,3 +5,9 @@
   flex-direction: column;
   align-items: center;
 }
+
+@media (max-width: 600px) {
+  .popup__container_place_info-tooltip {
+    padding: 50px 18px;
+  }
+}

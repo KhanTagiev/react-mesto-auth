@@ -1,3 +1,9 @@
 .header__links-container {
   display: flex;
 }
+
+@media (max-width: 600px) {
+  .header__links-container {
+    margin-right: 27px;
+  }
+}

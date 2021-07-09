@@ -1,0 +1,9 @@
+@media (max-width: 600px) {
+    .header__links-container_opened {
+        opacity: 1;
+        visibility: visible;
+        height: auto;
+        margin: 12px 0 27px;
+        padding-bottom: 40px;
+    }
+}

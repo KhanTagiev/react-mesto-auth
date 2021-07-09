@@ -1,0 +1,32 @@
+@media (max-width: 600px) {
+    .header__btn {
+        display: block;
+        height: 3px;
+        width: 24px;
+        position: relative;
+        background-color: #fff;
+        border: 0;
+    }
+
+    .header__btn::after {
+        content: '';
+        position: absolute;
+        top: -9px;
+        left: 0;
+        height: 3px;
+        width: 24px;
+        background-color: #fff;
+        transition: transform .5s ease 0s;
+    }
+
+    .header__btn::before {
+        content: '';
+        position: absolute;
+        top: 9px;
+        left: 0;
+        height: 3px;
+        width: 24px;
+        background-color: #fff;
+        transition: transform .5s ease 0s;
+    }
+}

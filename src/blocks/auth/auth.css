@@ -4,3 +4,9 @@
   max-width: 358px;
   padding: 60px 0;
 }
+
+@media (max-width: 600px) {
+  .auth {
+    padding: 40px 30px;
+  }
+}

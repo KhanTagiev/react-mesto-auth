@@ -4,3 +4,9 @@
   color: #000000;
   border-radius: 2px;
 }
+
+@media (max-width: 600px) {
+  .form__btn_place_auth {
+    margin-top: 170px;
+  }
+}
