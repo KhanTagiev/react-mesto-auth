@@ -1,22 +1,23 @@
 import React from 'react';
 import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
-import api from '../utils/api.js';
-import Header from './Header.js';
-import Main from './Main.js';
-import Login from './Login.js';
+import api from '../utils/api';
+import Header from './Header';
+import Main from './Main';
+import Login from './Login';
 import Register from './Register';
-import Footer from './Footer.js';
-import PopupWithForm from './PopupWithForm.js';
-import EditProfilePopup from './EditProfilePopup.js';
-import EditAvatarPopup from './EditAvatarPopup.js';
-import AddPlacePopup from './AddPlacePopup.js';
-import ImagePopup from './ImagePopup.js';
-import InfoTooltip from './InfoTooltip.js';
+import Footer from './Footer';
+import PopupWithForm from './PopupWithForm';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+import ImagePopup from './ImagePopup';
+import InfoTooltip from './InfoTooltip';
 import profileAvatar from '../images/profile-avatar.jpg';
 import ProtectedRoute from "./ProtectedRoute";
 import {CurrentUserContext} from '../contexts/CurrentUserContext';
-import * as mestoAuth from '../utils/mestoAuth.js'
-
+import * as mestoAuth from '../utils/mestoAuth';
+import {formAvatarSelector, formCardSelector, formProfileSelector, validateSelectors} from "../utils/constants";
+import FormValidator from "../utils/formValidator";
 
 function App() {
   const history = useHistory();
@@ -28,9 +29,17 @@ function App() {
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
+  const [profileFormValidator, setProfileFormValidator] = React.useState();
+  const [avatarFormValidator, setAvatarFormValidator] = React.useState();
+  const [cardFormValidator, setCardFormValidator] = React.useState();
 
   React.useEffect(() => {
     handleCheckToken();
+    setProfileFormValidator(handleFormsValidatorCreate(formProfileSelector));
+    setAvatarFormValidator(handleFormsValidatorCreate(formAvatarSelector));
+    setCardFormValidator(handleFormsValidatorCreate(formCardSelector));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   React.useEffect(() => {
@@ -41,6 +50,24 @@ function App() {
       })
       .catch((err) => console.log(err));
   }, [])
+
+  React.useEffect(() => {
+    if (profileFormValidator !== undefined) {
+      profileFormValidator.enableValidation()
+    }
+  }, [profileFormValidator])
+
+  React.useEffect(() => {
+    if (avatarFormValidator !== undefined) {
+      avatarFormValidator.enableValidation()
+    }
+  }, [avatarFormValidator])
+
+  React.useEffect(() => {
+    if (cardFormValidator !== undefined) {
+      cardFormValidator.enableValidation()
+    }
+  }, [cardFormValidator])
 
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -66,7 +93,18 @@ function App() {
       name: '',
       url: ''
     })
+    profileFormValidator.clearValidation();
+    avatarFormValidator.clearValidation();
+    cardFormValidator.clearValidation();
   }
+
+  function handleFormsValidatorCreate(popupSelector) {
+    const formElement = document.querySelector(popupSelector).querySelector('.form')
+    const formValidatorElement = new FormValidator(validateSelectors, formElement);
+
+    return formValidatorElement
+  }
+
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true)
@@ -74,6 +112,7 @@ function App() {
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true)
+
   }
 
   function handleAddPlaceClick() {
@@ -130,9 +169,9 @@ function App() {
   function handleAddPlaceSubmit(card, inputsClean) {
     api.sendNewCard(card)
       .then((newCard) => {
-        setCards([newCard, ...cards])
-        closeAllPopups()
-        inputsClean()
+        setCards([newCard, ...cards]);
+        closeAllPopups();
+        inputsClean();
       })
       .catch((err) => console.log(err))
   }

@@ -24,6 +24,7 @@ function Popup({name, isOpen, onClose, children}) {
       document.addEventListener('keydown', closeKeyPopup)
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (
