@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+export const BASE_URL = "https://auth.nomoreparties.co";
 
 function handleCheckResponse(res) {
   if (res.ok) {
@@ -10,34 +10,28 @@ function handleCheckResponse(res) {
 
 export const register = (email, password) => {
   return fetch(`${BASE_URL}/signup`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({email, password})
-  })
-  .then(res => handleCheckResponse(res));
+    body: JSON.stringify({ email, password }),
+  }).then((res) => handleCheckResponse(res));
 };
 export const authorize = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({email, password})
-  })
-  .then(res => handleCheckResponse(res));
-
+    body: JSON.stringify({ email, password }),
+  }).then((res) => handleCheckResponse(res));
 };
 export const checkToken = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    }
-  })
-  .then(res => handleCheckResponse(res));
-}
-
-
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((res) => handleCheckResponse(res));
+};
