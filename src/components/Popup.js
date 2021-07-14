@@ -1,4 +1,5 @@
 import React from "react";
+import { popupCloseKey } from "../utils/constants";
 
 function Popup({ name, isOpen, onClose, children }) {
   function closeClickPopup(evt) {
@@ -13,7 +14,7 @@ function Popup({ name, isOpen, onClose, children }) {
   }
 
   function closeKeyPopup(evt) {
-    if (evt.key === "Escape") {
+    if (evt.key === popupCloseKey) {
       onClose();
       document.removeEventListener("click", closeClickPopup);
       document.removeEventListener("keydown", closeKeyPopup);

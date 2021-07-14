@@ -16,3 +16,5 @@ export const formCardSelector = ".popup_photo-card";
 export const formAuthSelector = ".auth";
 
 export const formRegisterSelector = ".auth";
+
+export const popupCloseKey = "Escape";
