@@ -84,6 +84,7 @@ function App() {
   const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] =
     React.useState(false);
   const [isHeaderNavMenuOpen, setIsHeaderNavMenuOpen] = React.useState(false);
+
   const [selectedCard, setSelectedCard] = React.useState({
     isClicked: false,
     name: "",
