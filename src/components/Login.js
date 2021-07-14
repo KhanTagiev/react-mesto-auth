@@ -64,7 +64,6 @@ function Login({ handleLogin }) {
                 required
                 pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$"
                 title="Используйте большие и маленькие буквы, добавьте цифры."
-
                 onChange={handleChangePassword}
               />
               <span className="form__input-error auth-password-error"></span>

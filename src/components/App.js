@@ -84,7 +84,6 @@ function App() {
   const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] =
     React.useState(false);
   const [isHeaderNavMenuOpen, setIsHeaderNavMenuOpen] = React.useState(false);
-
   const [selectedCard, setSelectedCard] = React.useState({
     isClicked: false,
     name: "",
@@ -190,8 +189,8 @@ function App() {
       .sendNewCard(card)
       .then((newCard) => {
         setCards([newCard, ...cards]);
-        closeAllPopups();
         inputsClean();
+        closeAllPopups();
       })
       .catch((err) => console.log(err));
   }

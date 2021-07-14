@@ -2,6 +2,7 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import { formRegisterSelector, validateSelectors } from "../utils/constants";
 import FormValidator from "../utils/formValidator";
+
 function Register({ handleRegister }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
