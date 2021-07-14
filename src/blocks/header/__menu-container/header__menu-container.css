@@ -1,0 +1,7 @@
+@media (max-width: 600px) {
+    .header__menu-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}

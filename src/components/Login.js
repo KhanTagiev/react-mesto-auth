@@ -1,13 +1,24 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
+import { formAuthSelector, validateSelectors } from "../utils/constants";
+import FormValidator from "../utils/formValidator";
 
 function Login({ handleLogin }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  React.useEffect(() => {
+    const authFormValidator = new FormValidator(
+      validateSelectors,
+      document.querySelector(formAuthSelector).querySelector(".form")
+    );
+    authFormValidator.enableValidation();
+  }, []);
+
   function handleChangeEmail(e) {
     setEmail(e.target.value);
   }
+
   function handleChangePassword(e) {
     setPassword(e.target.value);
   }
@@ -20,6 +31,7 @@ function Login({ handleLogin }) {
 
     handleLogin(email, password);
   }
+
   return (
     <main>
       <section className="auth page_section-container">
@@ -47,17 +59,21 @@ function Login({ handleLogin }) {
                 value={password}
                 placeholder="Пароль"
                 name="auth-password"
-                minLength="2"
+                minLength="8"
                 maxLength="200"
                 required
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$"
+                title="Используйте большие и маленькие буквы, добавьте цифры."
+
                 onChange={handleChangePassword}
               />
               <span className="form__input-error auth-password-error"></span>
             </label>
             <button
-              className="form__btn form__btn_save form__btn_place_auth"
+              className="form__btn form__btn_save form__btn_place_auth form__btn_disabled"
               type="submit"
               aria-label="Войти"
+              disabled={true}
             >
               Войти
             </button>

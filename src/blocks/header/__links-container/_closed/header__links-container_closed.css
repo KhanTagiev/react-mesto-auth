@@ -1,0 +1,14 @@
+@media (max-width: 600px) {
+    .header__links-container_closed {
+        opacity: 0;
+        visibility: hidden;
+        height: 0;
+
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border-bottom: 1px solid rgba(84,84,84,.7);
+        transition: height .3s, opacity .5s ease;
+    }
+}

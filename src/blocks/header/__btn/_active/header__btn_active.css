@@ -1,0 +1,17 @@
+@media (max-width: 600px) {
+    .header__btn_active {
+        height: 0;
+    }
+
+    .header__btn_active::after {
+        transform: rotate(45deg);
+        transform-origin: left bottom;
+
+    }
+
+    .header__btn_active::before {
+        transform: rotate(-45deg);
+        transform-origin: left top;
+
+    }
+}

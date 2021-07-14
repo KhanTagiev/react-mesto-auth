@@ -1,21 +1,28 @@
 import React from "react";
-import { Route, Switch, Redirect, useHistory } from "react-router-dom";
-import api from "../utils/api.js";
-import Header from "./Header.js";
-import Main from "./Main.js";
-import Login from "./Login.js";
+import { Redirect, Route, Switch, useHistory } from "react-router-dom";
+import api from "../utils/api";
+import Header from "./Header";
+import Main from "./Main";
+import Login from "./Login";
 import Register from "./Register";
-import Footer from "./Footer.js";
-import PopupWithForm from "./PopupWithForm.js";
-import EditProfilePopup from "./EditProfilePopup.js";
-import EditAvatarPopup from "./EditAvatarPopup.js";
-import AddPlacePopup from "./AddPlacePopup.js";
-import ImagePopup from "./ImagePopup.js";
-import InfoTooltip from "./InfoTooltip.js";
+import Footer from "./Footer";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import DeleteCardPopup from "./DeleteCardPopup";
+import ImagePopup from "./ImagePopup";
+import InfoTooltip from "./InfoTooltip";
 import profileAvatar from "../images/profile-avatar.jpg";
 import ProtectedRoute from "./ProtectedRoute";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import * as mestoAuth from "../utils/mestoAuth.js";
+import * as mestoAuth from "../utils/mestoAuth";
+import {
+  formAvatarSelector,
+  formCardSelector,
+  formProfileSelector,
+  validateSelectors,
+} from "../utils/constants";
+import FormValidator from "../utils/formValidator";
 
 function App() {
   const history = useHistory();
@@ -27,9 +34,17 @@ function App() {
   const [cards, setCards] = React.useState([]);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [userEmail, setUserEmail] = React.useState("");
+  const [profileFormValidator, setProfileFormValidator] = React.useState();
+  const [avatarFormValidator, setAvatarFormValidator] = React.useState();
+  const [cardFormValidator, setCardFormValidator] = React.useState();
 
   React.useEffect(() => {
     handleCheckToken();
+    setProfileFormValidator(handleFormsValidatorCreate(formProfileSelector));
+    setAvatarFormValidator(handleFormsValidatorCreate(formAvatarSelector));
+    setCardFormValidator(handleFormsValidatorCreate(formCardSelector));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
@@ -41,6 +56,24 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
+  React.useEffect(() => {
+    if (profileFormValidator !== undefined) {
+      profileFormValidator.enableValidation();
+    }
+  }, [profileFormValidator]);
+
+  React.useEffect(() => {
+    if (avatarFormValidator !== undefined) {
+      avatarFormValidator.enableValidation();
+    }
+  }, [avatarFormValidator]);
+
+  React.useEffect(() => {
+    if (cardFormValidator !== undefined) {
+      cardFormValidator.enableValidation();
+    }
+  }, [cardFormValidator]);
+
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
@@ -48,10 +81,15 @@ function App() {
     React.useState(false);
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] =
     React.useState(false);
+  const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] =
+    React.useState(false);
+  const [isHeaderNavMenuOpen, setIsHeaderNavMenuOpen] = React.useState(false);
+
   const [selectedCard, setSelectedCard] = React.useState({
     isClicked: false,
     name: "",
     url: "",
+    _id: "",
   });
 
   const [status, setStatus] = React.useState(false);
@@ -60,12 +98,30 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setIsDeleteCardPopupOpen(false);
     setIsInfoTooltipPopupOpen(false);
+    setIsHeaderNavMenuOpen(false);
     setSelectedCard({
       isClicked: false,
       name: "",
       url: "",
+      _id: "",
     });
+    profileFormValidator.clearValidation();
+    avatarFormValidator.clearValidation();
+    cardFormValidator.clearValidation();
+  }
+
+  function handleFormsValidatorCreate(popupSelector) {
+    const formElement = document
+      .querySelector(popupSelector)
+      .querySelector(".form");
+    const formValidatorElement = new FormValidator(
+      validateSelectors,
+      formElement
+    );
+
+    return formValidatorElement;
   }
 
   function handleEditAvatarClick() {
@@ -80,11 +136,20 @@ function App() {
     setIsAddPlacePopupOpen(true);
   }
 
-  function handleCardClick(card) {
+  function handleDeleteCardClick() {
+    setIsDeleteCardPopupOpen(true);
+  }
+
+  function handleNavMenuOpenClick() {
+    setIsHeaderNavMenuOpen(true);
+  }
+
+  function handleCardClick(isTrue, card) {
     setSelectedCard({
-      isClicked: true,
+      isClicked: isTrue,
       name: card.name,
       url: card.link,
+      _id: card._id,
     });
   }
 
@@ -96,15 +161,6 @@ function App() {
         setCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
         );
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function handleCardDelete(card) {
-    api
-      .deleteCard(card)
-      .then(() => {
-        setCards(cards.filter((item) => item !== card));
       })
       .catch((err) => console.log(err));
   }
@@ -140,6 +196,16 @@ function App() {
       .catch((err) => console.log(err));
   }
 
+  function handleCardDeleteSubmit(card) {
+    api
+      .deleteCard(card)
+      .then(() => {
+        setCards(cards.filter((item) => item._id !== card._id));
+        closeAllPopups();
+      })
+      .catch((err) => console.log(err));
+  }
+
   function handleCheckToken() {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
@@ -150,9 +216,10 @@ function App() {
           setLoggedIn(true);
           history.push("/");
         })
-        .catch((err) => console.log(err));
-    } else {
-      return;
+        .catch((err) => {
+          localStorage.removeItem("jwt");
+          console.log(err);
+        });
     }
   }
 
@@ -195,6 +262,9 @@ function App() {
         <Header
           loggedIn={loggedIn}
           userEmail={userEmail}
+          isOpen={isHeaderNavMenuOpen}
+          onNavOpen={handleNavMenuOpenClick}
+          onClose={closeAllPopups}
           onSignOut={handleSignOut}
         />
         <Switch>
@@ -208,7 +278,7 @@ function App() {
             onEditAvatar={handleEditAvatarClick}
             onCardClick={handleCardClick}
             onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
+            onCardDelete={handleDeleteCardClick}
             cards={cards}
           />
           <Route path="/sign-in">
@@ -237,15 +307,12 @@ function App() {
           onAddPlace={handleAddPlaceSubmit}
         />
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-        <PopupWithForm title="Вы уверены?" name="photo-card-delete">
-          <button
-            className="popup__btn popup__btn_delete"
-            type="button"
-            aria-label="Удалить"
-          >
-            Да
-          </button>
-        </PopupWithForm>
+        <DeleteCardPopup
+          card={selectedCard}
+          isOpen={isDeleteCardPopupOpen}
+          onClose={closeAllPopups}
+          onDeleteCard={handleCardDeleteSubmit}
+        />
         <InfoTooltip
           isOpen={isInfoTooltipPopupOpen}
           onClose={closeAllPopups}

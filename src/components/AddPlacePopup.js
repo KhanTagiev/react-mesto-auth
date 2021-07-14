@@ -8,6 +8,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
   function handleChangeName(e) {
     setName(e.target.value);
   }
+
   function handleChangeLink(e) {
     setLink(e.target.value);
   }

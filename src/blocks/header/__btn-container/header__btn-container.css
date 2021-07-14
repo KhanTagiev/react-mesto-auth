@@ -1,0 +1,15 @@
+.header__btn-container {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .header__btn-container {
+        display: inline-block;
+        margin-right: 27px;
+        padding: 0;
+        border: 0;
+        width: 24px;
+        position: relative;
+        background-color: #0000;
+    }
+}
