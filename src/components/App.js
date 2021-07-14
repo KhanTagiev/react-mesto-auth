@@ -189,8 +189,8 @@ function App() {
       .sendNewCard(card)
       .then((newCard) => {
         setCards([newCard, ...cards]);
-        closeAllPopups();
         inputsClean();
+        closeAllPopups();
       })
       .catch((err) => console.log(err));
   }
